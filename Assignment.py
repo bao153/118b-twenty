@@ -2,7 +2,7 @@ from sklearn.mixture import GaussianMixture
 from sklearn.cluster import Birch, AgglomerativeClustering
 import numpy as np
 
-def AssignmentFunction(X,K,maxIter):
+def AssignmentFunction(data,K,maxIter):
     '''
     Returns the cluster assigment of 2d data relative to multiple algorithms
         Parameters:
@@ -11,7 +11,7 @@ def AssignmentFunction(X,K,maxIter):
         Returns:
             3xN dataset of cluster Assignment (3 Clustering Algorithms)
     '''
-    def kMeans():
+    def kMeans(X):
         print("Fitting Kmeans")
         def calcSqDistances(X, Kmus):
             # returns n x K matrix of distances where each row is a data pt and the columns are distances to K center
@@ -41,7 +41,7 @@ def AssignmentFunction(X,K,maxIter):
                     if Rnk[z][i] == 1:
                         avg = avg + X[z]
                         num +=1
-                avg = avg / num
+                if num!= 0: avg = avg / num
                 newMus[i]=avg
 
             return newMus
@@ -72,18 +72,24 @@ def AssignmentFunction(X,K,maxIter):
                 break
         return Rnk
 
-    def MOG():
+    def MOG(X):
         print("Fitting MOG")
         gm = GaussianMixture(n_components=K,max_iter=maxIter).fit(X)
         return gm.predict(X)
 
-    def birch():
+    def birch(X):
         print("Fitting Birch")
-        b = Birch(n_clusters=K).fit(X)
+        b = Birch(n_clusters=K, threshold=.5).fit(X)
         return b.predict(X)
+    
+    def normalize(col):
+        max_value = col.max()
+        min_value = col.min()
+        result = (col - min_value) / (max_value - min_value)
+        return result
 
-
-    kMeansResults = np.argmax(kMeans(),axis=1)
-    mogResults = MOG()
-    birchResults = birch()
+    normalized_data = np.array((normalize(data.T[0]),normalize(data.T[1])))
+    kMeansResults = np.argmax(kMeans(normalized_data),axis=1)
+    mogResults = MOG(normalized_data)
+    birchResults = birch(data)##dont normalize the data for birch
     return np.array((kMeansResults, mogResults, birchResults))
