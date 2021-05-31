@@ -11,7 +11,7 @@ def AssignmentFunction(X,K,maxIter):
         Returns:
             3xN dataset of cluster Assignment (3 Clustering Algorithms)
     '''
-    def kMeans():
+    def kMeans(X):
         print("Fitting Kmeans")
         def calcSqDistances(X, Kmus):
             # returns n x K matrix of distances where each row is a data pt and the columns are distances to K center
@@ -31,18 +31,23 @@ def AssignmentFunction(X,K,maxIter):
 
         def recalcMus(X, Rnk):
             # return a matrix of K rows, 2 cols
-            numClusters = len(Rnk[0])
-            newMus = np.zeros((numClusters, 2))
+#             numClusters = len(Rnk[0])
+#             newMus = np.zeros((numClusters, 2))
 
-            for i in range(numClusters):
-                num = 0
-                avg = np.zeros((1,2))
-                for z in range(len(X)):
-                    if Rnk[z][i] == 1:
-                        avg = avg + X[z]
-                        num +=1
-                avg = avg / num
-                newMus[i]=avg
+#             for i in range(numClusters):
+#                 num = 0
+#                 avg = np.zeros((1,2))
+#                 for z in range(len(X)):
+#                     if Rnk[z][i] == 1:
+#                         avg = avg + X[z]
+#                         num +=1
+#                 avg = avg / num
+#                 newMus[i]=avg
+            R = np.argmax(Rnk, axis=1)
+            newMus = np.zeros((np.shape(Rnk)[1], np.shape(X)[1]))
+        
+            for r in set(R):
+                newMus[r] = np.mean(X[R == r, :], axis=0)
 
             return newMus
 
@@ -65,7 +70,8 @@ def AssignmentFunction(X,K,maxIter):
             KmusOld = Kmus
 
             Kmus = recalcMus(X, Rnk)
-
+            
+            print("iter: ", iter)
             # Check to see if the cluster centers have converged.  If so, break.
             if sum(abs(KmusOld.flatten() - Kmus.flatten())) < 1e-6:
                 print("Converged!")
@@ -83,7 +89,7 @@ def AssignmentFunction(X,K,maxIter):
         return b.predict(X)
 
 
-    kMeansResults = np.argmax(kMeans(),axis=1)
+    kMeansResults = np.argmax(kMeans(X),axis=1)
     mogResults = MOG()
     birchResults = birch()
     return np.array((kMeansResults, mogResults, birchResults))
