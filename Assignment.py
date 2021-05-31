@@ -81,14 +81,14 @@ def AssignmentFunction(data,K,maxIter):
         print("Fitting Birch")
         b = Birch(n_clusters=K, threshold=.5).fit(X)
         return b.predict(X)
-    
+
     def normalize(col):
         max_value = col.max()
         min_value = col.min()
         result = (col - min_value) / (max_value - min_value)
         return result
 
-    normalized_data = np.array((normalize(data.T[0]),normalize(data.T[1])))
+    normalized_data = np.array((normalize(data.T[0]),normalize(data.T[1]))).T
     kMeansResults = np.argmax(kMeans(normalized_data),axis=1)
     mogResults = MOG(normalized_data)
     birchResults = birch(data)##dont normalize the data for birch
