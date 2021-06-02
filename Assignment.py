@@ -1,5 +1,6 @@
 from sklearn.mixture import GaussianMixture
 from sklearn.cluster import Birch, AgglomerativeClustering
+from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 
 def AssignmentFunction(data,K,maxIter):
@@ -79,17 +80,11 @@ def AssignmentFunction(data,K,maxIter):
 
     def birch(X):
         print("Fitting Birch")
-        b = Birch(n_clusters=K, threshold=.5).fit(X)
+        b = Birch(n_clusters=K, threshold=.5**(K)).fit(X)
         return b.predict(X)
 
-    def normalize(col):
-        max_value = col.max()
-        min_value = col.min()
-        result = (col - min_value) / (max_value - min_value)
-        return result
-
-    normalized_data = np.array((normalize(data.T[0]),normalize(data.T[1]))).T
+    normalized_data = MinMaxScaler().fit_transform(data)
     kMeansResults = np.argmax(kMeans(normalized_data),axis=1)
     mogResults = MOG(normalized_data)
-    birchResults = birch(data)##dont normalize the data for birch
+    birchResults = birch(normalized_data)
     return np.array((kMeansResults, mogResults, birchResults))
