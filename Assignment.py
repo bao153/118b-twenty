@@ -6,7 +6,7 @@ def AssignmentFunction(X,K,maxIter):
     '''
     Returns the cluster assigment of 2d data relative to multiple algorithms
         Parameters:
-            X[2xN Matrix]: 2d numpy array of data
+            X[2xN Matrix]: 2d numpy array of datas
             K[int]: Number of clusters
         Returns:
             3xN dataset of cluster Assignment (3 Clustering Algorithms)
@@ -71,7 +71,6 @@ def AssignmentFunction(X,K,maxIter):
 
             Kmus = recalcMus(X, Rnk)
             
-            print("iter: ", iter)
             # Check to see if the cluster centers have converged.  If so, break.
             if sum(abs(KmusOld.flatten() - Kmus.flatten())) < 1e-6:
                 print("Converged!")
